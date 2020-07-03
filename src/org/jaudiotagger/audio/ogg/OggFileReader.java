@@ -27,8 +27,11 @@ import org.jaudiotagger.tag.Tag;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.util.logging.Logger;
+
+import kotlin.NotImplementedError;
 
 /**
  * Read Ogg File Tag and Encoding information
@@ -136,6 +139,16 @@ public class OggFileReader extends AudioFileReader
         }
         System.out.println("Raf File Pointer at:" + raf.getFilePointer() + "File Size is:" + raf.length());
         raf.close();
+    }
+
+    @Override
+    protected GenericAudioHeader getEncodingInfo(InputStream stream, long size) throws CannotReadException, IOException {
+        throw new NotImplementedError();
+    }
+
+    @Override
+    protected Tag getTag(InputStream stream, long size) throws CannotReadException, IOException {
+        throw new NotImplementedError();
     }
 }
 

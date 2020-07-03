@@ -32,6 +32,7 @@ import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.audio.generic.AudioFileReader;
 import org.jaudiotagger.audio.generic.GenericAudioHeader;
 import org.jaudiotagger.logging.ErrorMessage;
+import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagException;
 import org.jaudiotagger.tag.asf.AsfTag;
 
@@ -39,6 +40,8 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+
+import kotlin.NotImplementedError;
 
 /**
  * This reader can read ASF files containing any content (stream type). <br>
@@ -275,4 +278,13 @@ public class AsfFileReader extends AudioFileReader
         }
     }
 
+    @Override
+    protected GenericAudioHeader getEncodingInfo(InputStream stream, long size) throws CannotReadException, IOException {
+        throw new NotImplementedError();
+    }
+
+    @Override
+    protected Tag getTag(InputStream stream, long size) throws CannotReadException, IOException {
+        throw new NotImplementedError();
+    }
 }

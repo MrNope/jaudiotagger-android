@@ -10,6 +10,7 @@ import org.jaudiotagger.tag.Tag;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
 
 /**
@@ -86,5 +87,14 @@ public class RealFileReader extends AudioFileReader
         return rv;
     }
 
+    @Override
+    protected GenericAudioHeader getEncodingInfo(InputStream stream, long size) throws CannotReadException, IOException {
+        return null;
+    }
+
+    @Override
+    protected Tag getTag(InputStream stream, long size) throws CannotReadException, IOException {
+        return null;
+    }
 }
 

@@ -24,7 +24,10 @@ import org.jaudiotagger.audio.generic.GenericAudioHeader;
 import org.jaudiotagger.tag.Tag;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
+
+import kotlin.NotImplementedError;
 
 /**
  * Mp4 File Reader
@@ -36,13 +39,23 @@ public class Mp4FileReader extends AudioFileReader
     private Mp4InfoReader ir = new Mp4InfoReader();
     private Mp4TagReader tr = new Mp4TagReader();
 
-    protected GenericAudioHeader getEncodingInfo(RandomAccessFile raf) throws CannotReadException, IOException
-    {
-        return ir.read(raf);
+    @Override
+    protected GenericAudioHeader getEncodingInfo(RandomAccessFile raf) throws CannotReadException, IOException {
+        throw new NotImplementedError();
     }
 
-    protected Tag getTag(RandomAccessFile raf) throws CannotReadException, IOException
-    {
-        return tr.read(raf);
+    @Override
+    protected Tag getTag(RandomAccessFile raf) throws CannotReadException, IOException {
+        throw new NotImplementedError();
+    }
+
+    @Override
+    protected GenericAudioHeader getEncodingInfo(InputStream stream, long size) throws CannotReadException, IOException {
+        throw new NotImplementedError();
+    }
+
+    @Override
+    protected Tag getTag(InputStream stream, long size) throws CannotReadException, IOException {
+        throw new NotImplementedError();
     }
 }

@@ -44,6 +44,7 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -191,6 +192,12 @@ public class AudioFileIO
           throws CannotReadException, IOException, TagException, ReadOnlyFileException, InvalidAudioFrameException
   {
       return getDefaultAudioFileIO().readFile(f);
+  }
+
+  public static AudioFile read(InputStream f, long size, String extension)
+          throws CannotReadException, IOException, TagException, ReadOnlyFileException, InvalidAudioFrameException
+  {
+      return getDefaultAudioFileIO().readFile(f, size, extension);
   }
 
     /**
@@ -354,6 +361,22 @@ public class AudioFileIO
             throw new CannotReadException(ErrorMessage.NO_READER_FOR_THIS_FORMAT.getMsg(ext));
         }
         AudioFile tempFile = afr.read(f);
+        tempFile.setExt(ext);
+        return tempFile;
+    }
+
+    public AudioFile readFile(InputStream string, long size, String ext)
+            throws CannotReadException, IOException, TagException, ReadOnlyFileException, InvalidAudioFrameException
+    {
+//        checkFileExists(f);
+//        String ext = Utils.getExtension(f);
+
+        AudioFileReader afr = readers.get(ext);
+        if (afr == null)
+        {
+            throw new CannotReadException(ErrorMessage.NO_READER_FOR_THIS_FORMAT.getMsg(ext));
+        }
+        AudioFile tempFile = afr.read(string, size);
         tempFile.setExt(ext);
         return tempFile;
     }

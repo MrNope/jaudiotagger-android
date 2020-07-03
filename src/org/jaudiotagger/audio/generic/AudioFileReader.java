@@ -29,6 +29,7 @@ import org.jaudiotagger.tag.TagException;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -62,6 +63,8 @@ public abstract class AudioFileReader
     */
     protected abstract GenericAudioHeader getEncodingInfo(RandomAccessFile raf) throws CannotReadException, IOException;
 
+    protected abstract GenericAudioHeader getEncodingInfo(InputStream stream, long size) throws CannotReadException, IOException;
+
 
 
     /*
@@ -72,6 +75,8 @@ public abstract class AudioFileReader
       * @exception CannotReadException when an error occured during the parsing of the tag
       */
     protected abstract Tag getTag(RandomAccessFile raf) throws CannotReadException, IOException;
+
+    protected abstract Tag getTag(InputStream stream, long size) throws CannotReadException, IOException;
 
     /*
       * Reads the given file, and return an AudioFile object containing the Tag
@@ -133,5 +138,61 @@ public abstract class AudioFileReader
                 logger.log(Level.WARNING, ErrorMessage.GENERAL_READ_FAILED_UNABLE_TO_CLOSE_RANDOM_ACCESS_FILE.getMsg(f.getAbsolutePath()));
             }
         }
+    }
+
+    public AudioFile read(InputStream stream, long size) throws CannotReadException, IOException, TagException, ReadOnlyFileException, InvalidAudioFrameException
+    {
+        if(logger.isLoggable(Level.CONFIG))
+        {
+            logger.config(ErrorMessage.GENERAL_READ.getMsg("TODO"));
+        }
+
+//        if (!f.canRead())
+//        {
+//            throw new NoReadPermissionsException(ErrorMessage.GENERAL_READ_FAILED_DO_NOT_HAVE_PERMISSION_TO_READ_FILE.getMsg(f.getPath()));
+//        }
+
+        if (size <= MINIMUM_SIZE_FOR_VALID_AUDIO_FILE)
+        {
+            throw new CannotReadException(ErrorMessage.GENERAL_READ_FAILED_FILE_TOO_SMALL.getMsg("TODO"));
+        }
+
+//        RandomAccessFile raf = null;
+        try
+        {
+//            raf = new RandomAccessFile(f, "r");
+//            raf.seek(0);
+
+            stream.reset();
+            GenericAudioHeader info = getEncodingInfo(stream, size);
+//            raf.seek(0);
+            stream.reset();
+            Tag tag = getTag(stream, size);
+            return new AudioFile(stream, size, info, tag);
+
+        }
+        catch (CannotReadException cre)
+        {
+            throw cre;
+        }
+        catch (Exception e)
+        {
+            logger.log(Level.SEVERE, ErrorMessage.GENERAL_READ.getMsg("TODO"),e);
+            throw new CannotReadException("TODO:" + e.getMessage(), e);
+        }
+//        finally
+//        {
+//            try
+//            {
+//                if (raf != null)
+//                {
+//                    raf.close();
+//                }
+//            }
+//            catch (Exception ex)
+//            {
+//                logger.log(Level.WARNING, ErrorMessage.GENERAL_READ_FAILED_UNABLE_TO_CLOSE_RANDOM_ACCESS_FILE.getMsg(f.getAbsolutePath()));
+//            }
+//        }
     }
 }

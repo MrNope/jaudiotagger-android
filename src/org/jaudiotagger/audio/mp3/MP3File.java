@@ -159,6 +159,34 @@ public class MP3File extends AudioFile
         }
     }
 
+    private void readV1Tag(InputStream stream, int loadOptions) throws IOException
+    {
+        if ((loadOptions & LOAD_IDV1TAG) != 0)
+        {
+            logger.finer("Attempting to read id3v1tags");
+            try
+            {
+                id3v1tag = new ID3v11Tag(stream, "TODO");
+            }
+            catch (TagNotFoundException ex)
+            {
+                logger.config("No ids3v11 tag found");
+            }
+
+            try
+            {
+                if (id3v1tag == null)
+                {
+                    id3v1tag = new ID3v1Tag(newFile, file.getName());
+                }
+            }
+            catch (TagNotFoundException ex)
+            {
+                logger.config("No id3v1 tag found");
+            }
+        }
+    }
+
     /**
      * Read V2tag, if exists.
      *
@@ -435,6 +463,56 @@ public class MP3File extends AudioFile
 
             //Read v2 tags (if any)
             readV2Tag(file, loadOptions, (int)((MP3AudioHeader) audioHeader).getMp3StartByte());
+
+            //If we have a v2 tag use that, if we do not but have v1 tag use that
+            //otherwise use nothing
+            //TODO:if have both should we merge
+            //rather than just returning specific ID3v22 tag, would it be better to return v24 version ?
+            if (this.getID3v2Tag() != null)
+            {
+                tag = this.getID3v2Tag();
+            }
+            else if (id3v1tag != null)
+            {
+                tag = id3v1tag;
+            }
+        }
+        finally
+        {
+            if (newFile != null)
+            {
+                newFile.close();
+            }
+        }
+    }
+
+    public MP3File(InputStream stream, long size, int loadOptions) throws IOException, TagException, ReadOnlyFileException, CannotReadException, InvalidAudioFrameException
+    {
+//        final boolean readOnly = false;
+        try
+        {
+            this.file = null;
+
+            //Check File accessibility
+//            newFile = checkFilePermissions(file, readOnly);
+
+            //Read ID3v2 tag size (if tag exists) to allow audioHeader parsing to skip over tag
+            long tagSizeReportedByHeader = AbstractID3v2Tag.getV2TagSizeIfExists(stream);
+            logger.config("TagHeaderSize:" + Hex.asHex(tagSizeReportedByHeader));
+            audioHeader = new MP3AudioHeader(stream, tagSizeReportedByHeader);
+
+            //If the audio header is not straight after the end of the tag then search from start of file
+            if (tagSizeReportedByHeader != ((MP3AudioHeader) audioHeader).getMp3StartByte())
+            {
+                logger.config("First header found after tag:" + audioHeader);
+                audioHeader = checkAudioStart(tagSizeReportedByHeader, (MP3AudioHeader) audioHeader);
+            }
+
+            //Read v1 tags (if any)
+            readV1Tag(stream, newFile, loadOptions);
+
+            //Read v2 tags (if any)
+            readV2Tag(stream, loadOptions, (int)((MP3AudioHeader) audioHeader).getMp3StartByte());
 
             //If we have a v2 tag use that, if we do not but have v1 tag use that
             //otherwise use nothing

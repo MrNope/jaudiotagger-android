@@ -11,8 +11,11 @@ import org.jaudiotagger.tag.TagException;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.util.logging.Level;
+
+import kotlin.NotImplementedError;
 
 /**
  * Replacement for AudioFileReader class
@@ -79,5 +82,15 @@ public abstract class AudioFileReader2 extends AudioFileReader
     protected Tag getTag(RandomAccessFile file) throws CannotReadException, IOException
     {
         throw new UnsupportedOperationException("Old method not used in version 2");
+    }
+
+    @Override
+    protected GenericAudioHeader getEncodingInfo(InputStream stream, long size) throws CannotReadException, IOException {
+        throw new NotImplementedError();
+    }
+
+    @Override
+    protected Tag getTag(InputStream stream, long size) throws CannotReadException, IOException {
+        throw new NotImplementedError();
     }
 }

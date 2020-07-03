@@ -21,6 +21,7 @@ import org.jaudiotagger.tag.wav.WavTag;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.logging.Logger;
@@ -79,6 +80,13 @@ public class AudioFile
     public AudioFile(File f, AudioHeader audioHeader, Tag tag)
     {
         this.file = f;
+        this.audioHeader = audioHeader;
+        this.tag = tag;
+    }
+
+    public AudioFile(InputStream stream, long size, AudioHeader audioHeader, Tag tag)
+    {
+        this.file = null;
         this.audioHeader = audioHeader;
         this.tag = tag;
     }

@@ -11,7 +11,10 @@ import org.jaudiotagger.tag.TagException;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
+
+import kotlin.NotImplementedError;
 
 /**
  * Read Mp3 Info (retrofitted to entagged ,done differently to entagged which is why some methods throw RuntimeException)
@@ -40,6 +43,12 @@ public class MP3FileReader extends AudioFileReader
         return mp3File;
     }
 
+    @Override
+    public AudioFile read(InputStream stream, long size) throws CannotReadException, IOException, TagException, ReadOnlyFileException, InvalidAudioFrameException {
+        MP3File mp3File = new MP3File(stream, size, MP3File.LOAD_IDV1TAG | MP3File.LOAD_IDV2TAG);
+        return mp3File;
+    }
+
     /**
      * Read
      *
@@ -54,6 +63,16 @@ public class MP3FileReader extends AudioFileReader
     {
         MP3File mp3File = new MP3File(f, MP3File.LOAD_IDV1TAG | MP3File.LOAD_IDV2TAG, false);
         return mp3File;
+    }
+
+    @Override
+    protected GenericAudioHeader getEncodingInfo(InputStream stream, long size) throws CannotReadException, IOException {
+        throw new NotImplementedError();
+    }
+
+    @Override
+    protected Tag getTag(InputStream stream, long size) throws CannotReadException, IOException {
+        throw new NotImplementedError();
     }
 
 }

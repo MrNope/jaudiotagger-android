@@ -32,6 +32,7 @@ import org.jaudiotagger.tag.id3.framebody.*;
 import org.jaudiotagger.tag.reference.GenreTypes;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -231,6 +232,21 @@ public class ID3v11Tag extends ID3v1Tag
      * @throws IOException
      */
     public ID3v11Tag(RandomAccessFile file, String loggingFilename) throws TagNotFoundException, IOException
+    {
+        setLoggingFilename(loggingFilename);
+        FileChannel fc;
+        ByteBuffer byteBuffer = ByteBuffer.allocate(TAG_LENGTH);
+
+        fc = file.getChannel();
+        fc.position(file.length() - TAG_LENGTH);
+
+        fc.read(byteBuffer);
+        byteBuffer.flip();
+        read(byteBuffer);
+
+    }
+
+    public ID3v11Tag(InputStream stream, String loggingFilename) throws TagNotFoundException, IOException
     {
         setLoggingFilename(loggingFilename);
         FileChannel fc;
